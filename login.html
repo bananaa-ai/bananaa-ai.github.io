@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #4a90e2;
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+
+        p {
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: #357abd;
+        }
+
+        .error {
+            color: red;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="loginContainer">
+    <h1>Login</h1>
+    <p>Please enter your email to receive a verification code.</p>
+    <input type="email" id="emailInput" class="input-field" placeholder="Enter your email" required>
+    <button class="btn" onclick="sendVerificationCode()">Send Verification Code</button>
+    <p class="error" id="errorMessage"></p>
+</div>
+
+<div class="container" id="verifyContainer" style="display: none;">
+    <h1>Verification</h1>
+    <p>Enter the verification code sent to your email.</p>
+    <input type="text" id="codeInput" class="input-field" placeholder="Enter verification code" required>
+    <button class="btn" onclick="verifyCode()">Verify</button>
+    <p class="error" id="verificationErrorMessage"></p>
+</div>
+
+<script>
+    let userEmail = '';
+
+    function sendVerificationCode() {
+        const emailInput = document.getElementById("emailInput").value;
+        if (!emailInput) {
+            document.getElementById("errorMessage").textContent = "Please enter a valid email.";
+            return;
+        }
+
+        userEmail = emailInput;
+
+        fetch("http://localhost:8000/login", {
+            method: "GET",
+            headers: {
+                "x-email-id": userEmail
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error === "err sending email") {
+                document.getElementById("errorMessage").textContent = "Error sending email. Please try again.";
+            } else {
+                // Move to verification code input
+                document.getElementById("loginContainer").style.display = "none";
+                document.getElementById("verifyContainer").style.display = "block";
+            }
+        })
+        .catch(error => {
+            document.getElementById("errorMessage").textContent = "Network error. Please try again.";
+            console.error("Error:", error);
+        });
+    }
+
+    function verifyCode() {
+        const verificationCode = document.getElementById("codeInput").value;
+        if (!verificationCode) {
+            document.getElementById("verificationErrorMessage").textContent = "Please enter the verification code.";
+            return;
+        }
+
+        fetch("http://localhost:8000/login_code", {
+            method: "GET",
+            headers: {
+                "x-email-id": userEmail,
+                "x-code": verificationCode
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const apiKey = data["x_api_key"];
+            if (apiKey.includes("incorrect")) {
+                document.getElementById("verificationErrorMessage").textContent = "Incorrect verification code. Please try again.";
+                document.getElementById("verifyContainer").style.display = "none";
+                document.getElementById("loginContainer").style.display = "block";
+            } else {
+                // Store API key in localStorage
+                localStorage.setItem("x-api-key", apiKey);
+                alert("Logged in successfully!");
+                window.location.href = "index.html"; // Redirect to the main page
+            }
+        })
+        .catch(error => {
+            document.getElementById("verificationErrorMessage").textContent = "Network error. Please try again.";
+            console.error("Error:", error);
+        });
+    }
+</script>
+
+</body>
+</html>
+
