@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>BananaAI || AI Website Generator</title>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Bananaa-AI: Your AI-powered website generator! Create stunning, responsive websites effortlessly with our fully automated platform. Easily integrate files and resources, and host your website instantly for free.">
+<meta name="keywords" content="AI website generator, responsive websites, website hosting, automated website creation, integrate files, free hosting">
+<meta name="author" content="Bananaa-AI">
+<meta property="og:title" content="Bananaa-AI: AI-Powered Website Generator">
+<meta property="og:description" content="Create stunning, responsive websites effortlessly with our AI technology. Instant hosting and file integration for free!">
+<meta property="og:url" content="https://bananaa-ai.github.io">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bananaa-AI: AI-Powered Website Generator">
+<meta name="twitter:description" content="Create stunning, responsive websites effortlessly with our AI technology. Instant hosting and file integration for free!">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            
+	    background: #181a18;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            font-size: 16px;
+        }
+
+        header {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #357abd;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #4a90e2;
+        }
+
+        p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .feature-list {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .feature-list li {
+            margin: 8px 0;
+            color: #666;
+        }
+
+        footer {
+            margin-top: 40px;
+            font-size: 0.8rem;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <button id="authButton" class="btn" onclick="toggleAuth()"></button>
+</header>
+
+<div class="container">
+    <h1>Banana AI</h1>
+    <p>Welcome to our AI-powered website generator! Create stunning, responsive websites effortlessly. Our platform provides you with a tool which can integrate files, resources for a website and host by the latest in AI technology.</p>
+    <div class="feature-list">
+        <h2>Main Features:</h2>
+        <ul>
+            <li><strong>Resource Integration:</strong> Easily add images, icons, and other assets for your project.</li>
+            <li><strong>Free Hosting:</strong> Your website is hosted instantly and for free, so you can focus on creating.</li>
+        </ul>
+    </div>
+    <button id="mainButton" class="btn" onclick="handleMainButtonClick()"></button>
+</div>
+
+<footer>
+    © 2024 Banana AI
+</footer>
+
+<script>
+    // Check if the user is logged in
+    function isLoggedIn() {
+        return localStorage.getItem("x-api-key") !== null;
+    }
+
+    // Set up initial button text based on login status
+    function setupButtons() {
+        const authButton = document.getElementById("authButton");
+        const mainButton = document.getElementById("mainButton");
+
+        if (isLoggedIn()) {
+            authButton.textContent = "Logout";
+            mainButton.textContent = "Open Chat";
+            mainButton.onclick = () => window.location.href = 'assist.html';
+        } else {
+            authButton.textContent = "Login";
+            mainButton.textContent = "Login to Access Chat";
+            mainButton.onclick = login;
+        }
+    }
+
+    // Toggle login/logout functionality
+    function toggleAuth() {
+        if (isLoggedIn()) {
+            localStorage.removeItem("x-api-key");
+            alert("Logged out successfully!");
+        } else {
+            login();
+        }
+        setupButtons();
+    }
+
+    // Simulate login and store API key in localStorage
+    function login() {
+        window.location.href = 'login.html'; 
+    }
+
+    // Handle main button click based on login status
+    function handleMainButtonClick() {
+        if (isLoggedIn()) {
+            window.location.href = 'assist.html';
+        } else {
+            login();
+        }
+    }
+
+    // Initialize the buttons when page loads
+    setupButtons();
+</script>
+
+</body>
+</html>
+
