@@ -104,7 +104,7 @@
 
         userEmail = emailInput;
 
-        fetch("http://localhost:8000/login", {
+        fetch("https://bananaaai.pythonanywhere.com/login", {
             method: "GET",
             headers: {
                 "x-email-id": userEmail
@@ -133,7 +133,7 @@
             return;
         }
 
-        fetch("http://localhost:8000/login_code", {
+        fetch("https://bananaaai.pythonanywhere.com/login_code", {
             method: "GET",
             headers: {
                 "x-email-id": userEmail,
