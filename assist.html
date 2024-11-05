@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Website Generator</title>
+    <style>
+        /* Basic styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8; /* Light background for day mode */
+            color: #333;
+            transition: background-color 0.5s, color 0.5s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        body.night {
+            background-color: #333; /* Dark background for night mode */
+            color: #f0f4f8;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            text-align: center;
+            transition: color 0.5s;
+        }
+
+        .prompt-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+
+        #prompt-input {
+            padding: 10px;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            width: 300px;
+            transition: border-color 0.3s;
+            font-size: 1rem;
+        }
+
+        #prompt-input:focus {
+            border-color: #0056b3;
+            outline: none;
+        }
+
+        #send-button {
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background-color 0.3s;
+        }
+
+        #send-button:hover {
+            background-color: #0056b3;
+        }
+
+        #response {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            transition: opacity 0.5s;
+            opacity: 0;
+        }
+
+        .logout-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <h1>AI Website Generator</h1>
+    <div class="prompt-container">
+        <input type="text" id="prompt-input" placeholder="Enter your prompt here..." />
+        <button id="send-button">
+            <img src="send-icon.svg" alt="Send" />
+        </button>
+    </div>
+    <div id="response" class="response hidden"></div>
+    <button id="logout-button" class="logout-button">Logout</button>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const promptInput = document.getElementById('prompt-input');
+            const sendButton = document.getElementById('send-button');
+            const responseDiv = document.getElementById('response');
+            const logoutButton = document.getElementById('logout-button');
+
+            // Check for x_api_key in local storage
+            const xApiKey = localStorage.getItem('x-api-key');
+            if (!xApiKey) {
+                window.location.href = 'login.html'; // Redirect to login if not logged in
+            }
+
+            // Theme switch based on time
+            const hours = new Date().getHours();
+            if (hours >= 18 || hours < 6) {
+                document.body.classList.add('night');
+            }
+
+            // Send prompt
+            sendButton.addEventListener('click', () => {
+                const prompt = promptInput.value.trim();
+                if (prompt) {
+                    fetch('http://localhost:8000/website_gen', {
+                        method: 'GET',
+                        headers: {
+                            'x-api-key': xApiKey,
+                            'prompt': prompt
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        responseDiv.innerText = data.message; // Update the response area
+                        responseDiv.style.opacity = 1; // Show the response
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                }
+            });
+
+            // Logout functionality
+            logoutButton.addEventListener('click', () => {
+                fetch('http://localhost:8000/logout', {
+                    method: 'GET',
+                    headers: {
+                        'x-api-key': xApiKey
+                    }
+                })
+                .then(() => {
+                    localStorage.removeItem('x-api-key'); // Clear the API key
+                    window.location.href = 'login.html'; // Redirect to login
+                })
+                .catch(error => {
+                    console.error('Error during logout:', error);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
