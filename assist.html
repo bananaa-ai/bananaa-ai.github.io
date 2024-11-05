@@ -134,7 +134,7 @@
             sendButton.addEventListener('click', () => {
                 const prompt = promptInput.value.trim();
                 if (prompt) {
-                    fetch('http://localhost:8000/website_gen', {
+                    fetch('https://bananaaai.pythonanywhere.com/website_gen', {
                         method: 'GET',
                         headers: {
                             'x-api-key': xApiKey,
@@ -154,7 +154,7 @@
 
             // Logout functionality
             logoutButton.addEventListener('click', () => {
-                fetch('http://localhost:8000/logout', {
+                fetch('https://bananaaai.pythonanywhere.com/logout', {
                     method: 'GET',
                     headers: {
                         'x-api-key': xApiKey
