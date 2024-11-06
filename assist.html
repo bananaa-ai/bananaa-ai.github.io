@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Bananaa-AI: Your AI-powered website generator! Create stunning, responsive websites effortlessly with our fully automated platform. Easily integrate files and resources, and host your website instantly for free.">
+    <meta name="description" content="Bananaa-AI: Your AI-powered website generator! Create stunning, responsive websites effortlessly with our fully automated platform. Easily integrate files and resources, and host your website instantly for free.">
 <meta name="keywords" content="AI website generator, responsive websites, website hosting, automated website creation, integrate files, free hosting">
 <meta name="author" content="Bananaa-AI">
 <meta property="og:title" content="Bananaa-AI: AI-Powered Website Generator">
@@ -12,13 +13,13 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Bananaa-AI: AI-Powered Website Generator">
 <meta name="twitter:description" content="Create stunning, responsive websites effortlessly with our AI technology. Instant hosting and file integration for free!">
-    <title>AI Website Generator</title>
+    <title>Bananaa ai|| AI Website Generator</title>
     <style>
         /* Basic styles */
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background-color: #f0f4f8; /* Light background for day mode */
+            background-color: #f0f4f8;
             color: #333;
             transition: background-color 0.5s, color 0.5s;
             display: flex;
@@ -29,7 +30,7 @@
         }
 
         body.night {
-            background-color: #333; /* Dark background for night mode */
+            background-color: #333;
             color: #f0f4f8;
         }
 
@@ -44,42 +45,82 @@
             display: flex;
             align-items: center;
             margin-bottom: 20px;
-            transition: transform 0.3s;
         }
 
         #prompt-input {
-            padding: 10px;
-            border: 2px solid #007bff;
-            border-radius: 5px;
-            width: 300px;
-            transition: border-color 0.3s;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 15px;
             font-size: 1rem;
+            background: linear-gradient(135deg, #e0e7ff, #dfe7f8);
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            outline: none;
+            resize: none;
+            width: 200px;
+            height: 40px;
+            max-width: 500px;
+            max-height: 150px;
+            transition: box-shadow 0.3s, transform 0.3s;
         }
 
         #prompt-input:focus {
-            border-color: #0056b3;
-            outline: none;
+            box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
+            transform: scale(1.05);
         }
 
         #send-button {
             background-color: #007bff;
             border: none;
-            border-radius: 5px;
-            padding: 10px 15px;
+            border-radius: 50%;
+            padding: 10px;
             cursor: pointer;
             margin-left: 10px;
-            transition: background-color 0.3s;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s, transform 0.3s;
         }
 
         #send-button:hover {
             background-color: #0056b3;
+            transform: scale(1.1);
+        }
+
+        #send-button img {
+            width: 20px;
+            height: 20px;
+            filter: invert(1);
         }
 
         #response {
             margin-top: 20px;
             font-size: 1.2rem;
-            transition: opacity 0.5s;
+            display: flex;
+            align-items: center;
             opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        #response a {
+            color: #007bff;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        #copy-button {
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #copy-button:hover {
+            background-color: #0056b3;
         }
 
         .logout-button {
@@ -101,14 +142,17 @@
     </style>
 </head>
 <body>
-    <h1>AI Website Generator</h1>
+    <h1>Bananaa Ai</h1>
     <div class="prompt-container">
-        <input type="text" id="prompt-input" placeholder="Enter your prompt here..." />
+        <textarea id="prompt-input" placeholder="Enter your prompt here..."></textarea>
         <button id="send-button">
-            <img src="send-icon.svg" alt="Send" />
+            <img src="send-icon.png" alt="Send" />
         </button>
     </div>
-    <div id="response" class="response hidden"></div>
+    <div id="response" class="response">
+        <a id="response-link" href="#" target="_blank"></a>
+        <button id="copy-button">Copy Link</button>
+    </div>
     <button id="logout-button" class="logout-button">Logout</button>
 
     <script>
@@ -116,6 +160,8 @@
             const promptInput = document.getElementById('prompt-input');
             const sendButton = document.getElementById('send-button');
             const responseDiv = document.getElementById('response');
+            const responseLink = document.getElementById('response-link');
+            const copyButton = document.getElementById('copy-button');
             const logoutButton = document.getElementById('logout-button');
 
             // Check for x_api_key in local storage
@@ -130,11 +176,19 @@
                 document.body.classList.add('night');
             }
 
-            // Send prompt
+            // Dynamic width and height adjustment for prompt-input
+            promptInput.addEventListener('input', () => {
+                const textLength = promptInput.value.length;
+                const lines = promptInput.value.split('\n').length;
+                promptInput.style.width = Math.min(200 + textLength * 3, 500) + 'px';
+                promptInput.style.height = Math.min(40 + lines * 20, 150) + 'px';
+            });
+
+            // Send prompt and display response
             sendButton.addEventListener('click', () => {
                 const prompt = promptInput.value.trim();
                 if (prompt) {
-                    fetch('https://bananaaai.pythonanywhere.com/website_gen', {
+                    fetch('http://localhost:8000/website_gen', {
                         method: 'GET',
                         headers: {
                             'x-api-key': xApiKey,
@@ -143,8 +197,9 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        responseDiv.innerText = data.message; // Update the response area
-                        responseDiv.style.opacity = 1; // Show the response
+                        responseLink.href = data.res;
+                        responseLink.textContent = `Website: ${data.res}`;
+                        responseDiv.style.opacity = 1;
                     })
                     .catch(error => {
                         console.error('Error:', error);
@@ -152,17 +207,28 @@
                 }
             });
 
+            // Copy link to clipboard
+            copyButton.addEventListener('click', () => {
+                navigator.clipboard.writeText(responseLink.href)
+                    .then(() => {
+                        alert("Link copied to clipboard!");
+                    })
+                    .catch(error => {
+                        console.error("Copy failed:", error);
+                    });
+            });
+
             // Logout functionality
             logoutButton.addEventListener('click', () => {
-                fetch('https://bananaaai.pythonanywhere.com/logout', {
+                fetch('http://localhost:8000/logout', {
                     method: 'GET',
                     headers: {
                         'x-api-key': xApiKey
                     }
                 })
                 .then(() => {
-                    localStorage.removeItem('x-api-key'); // Clear the API key
-                    window.location.href = 'login.html'; // Redirect to login
+                    localStorage.removeItem('x-api-key');
+                    window.location.href = 'login.html';
                 })
                 .catch(error => {
                     console.error('Error during logout:', error);
