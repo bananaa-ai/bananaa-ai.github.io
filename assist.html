@@ -188,6 +188,10 @@
             sendButton.addEventListener('click', () => {
                 const prompt = promptInput.value.trim();
                 if (prompt) {
+                        responseLink.href = '';
+                        responseLink.textContent = `Website: Will be ready in few secs..`;
+                        responseDiv.style.opacity = 1;
+
                     fetch('https://bananaaai.pythonanywhere.com/website_gen', {
                         method: 'GET',
                         headers: {
